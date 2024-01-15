@@ -4,6 +4,7 @@
 #include <zephyr/bluetooth/hci.h>
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/sys/byteorder.h>
+#include <stdlib.h>
 
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1) // null terminator
@@ -139,6 +140,6 @@ int bt_init() {
   }
 
   // Register the callback functions for bluetooth connections
-  bt_conn_cb_register(&conn_callbacks);
+  bt_conn_cb_register(&bt_connection);
   return 0;
 }
