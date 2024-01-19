@@ -7,6 +7,7 @@
 #include <zephyr/sys/util.h>
 #include <zephyr/types.h>
 
+#include "leds.h"
 #include "thingy_bt.h"
 
 void main(void) {
@@ -15,10 +16,15 @@ void main(void) {
     exit(1);
   }
 
+  if (init_leds()) {
+    printk("Having some troubles with the initialization of the leds... Help");
+    exit(1);
+  }
+
   while (1) {
     notify_server();
 
     k_sleep(K_SECONDS(1));
   }
-
+  
 }
