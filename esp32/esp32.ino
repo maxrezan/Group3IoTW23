@@ -33,9 +33,15 @@ static float data_received[] = { 0., };
 
 static void notify_callback0(BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
   Serial.printf("Received the following data:\n");
-  for (int i = 0; i < 5; i++) {
-    Serial.printf("data[%d] = %d\n", i, pData[i]);
-  }
+  // Create variables to store the doubles
+  double temperature, humidity;
+
+  // Copy the bytes from the array to the first double variable
+  memcpy(&temperature, &pData[0], sizeof(double));
+
+  // Copy the bytes from the array to the second double variable
+  memcpy(&humidity, &pData[sizeof(double)], sizeof(double));
+  Serial.printf("Temperature: %.1fC | Humidity: %.1f %%\n", temperature, humidity);
 };
 
 typedef void (*notify_callback_type)(

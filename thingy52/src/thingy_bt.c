@@ -6,11 +6,14 @@
 #include <zephyr/sys/byteorder.h>
 #include <stdlib.h>
 
+#include "leds.h"
+
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1) // null terminator
 #define BT_UUID_HTS_INTERMEDIATE BT_UUID_DECLARE_16(0x2a1e)
 
-static uint8_t data[5];
+// Create an array to store the bytes of the doubles
+static uint8_t data[2 * sizeof(double)];
 
 /*
  * Define and register service
@@ -102,6 +105,7 @@ static void bt_connected(struct bt_conn *connection, uint8_t error) {
  */
 static void bt_disconnected(struct bt_conn *connection, uint8_t reason) {
   printk("Bluetooth disconnected | Reason: %d\n", reason);
+  turn_on_color(green);
 }
 
 /**
@@ -117,18 +121,21 @@ static struct bt_conn_cb bt_connection = {
  * Send data to the server without expecting any acknowledgment
  */
 void notify_server() {
-  data[0] = 0;
-  data[1] = 1;
-  data[2] = 2;
-  data[3] = 3;
-  data[4] = 4;
+  turn_on_color(red);
+  extern double temperature;
+  extern double humidity;
+
+  memcpy(&data[0], &temperature, sizeof(double));
+  memcpy(&data[sizeof(double)], &humidity, sizeof(double));
+
   bt_gatt_notify(
-	NULL,
-	&health_thermometer_svc.attrs[1],
-	data,
-	sizeof(data)
+    NULL,
+    &health_thermometer_svc.attrs[1],
+    data,
+    sizeof(data)
   );
-  printk("Server notified\n");
+
+  printk("Server notified.\n");
 }
 
 int bt_init() {

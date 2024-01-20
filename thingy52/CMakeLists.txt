@@ -10,4 +10,5 @@ target_sources(app PRIVATE
 	src/main.c
 	src/thingy_bt.c
 	src/leds.c
+	src/sensor.c
 )
