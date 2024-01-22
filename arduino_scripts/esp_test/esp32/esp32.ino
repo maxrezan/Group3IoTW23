@@ -1,22 +1,27 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-const char* ssid = "max_a53";
-const char* password = "mehanikk";
-const char* mqttServer = "192.168.94.84"; // IP address or hostname of your MQTT broker
-const int mqttPort = 1883;
-const char* mqttUser = "samsung";
-const char* mqttPassword = "0000";
-const char* topic = "testTopic";
+char* ssid = "max_a53";
+char* password = "mehanikk";
+char* mqttServer = "192.168.224.84"; // IP address or hostname of your MQTT broker
+int mqttPort = 1883;
+char* topic = "testTopic";
+// const char* ssid = "max_a53";
+// const char* password = "mehanikk";
+// const char* mqttServer = "192.168.204.84"; // IP address or hostname of your MQTT broker
+// const int mqttPort = 1883;
+char* mqttUser = "mqtt_broker";
+char* mqttPassword = "mqttbroker";
+// const char* topic = "testTopic";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message received on topic: ");
+  Serial.print("Topic: ");
   Serial.println(topic);
 
-  Serial.print("Payload: ");
+  Serial.print("Message: ");
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
   }
