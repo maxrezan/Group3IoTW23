@@ -21,7 +21,7 @@ double co2;
  */
 static void get_measurements(const struct device *dev,
                             const struct sensor_trigger *trig) {
-    struct sensor_value temp, hum, dvc_temp;
+    struct sensor_value temp, hum, g, pwr, c;
     int error;
     if ((error = sensor_sample_fetch(dev)) < 0) {
         printk("Sensor sample_fetch error: %d\n", error);
@@ -37,31 +37,31 @@ static void get_measurements(const struct device *dev,
         return;
     }
 
-    if (sensor_channel_get(dev, SENSOR_CHAN_GAS_RES, &gas) < 0) {
+    if (sensor_channel_get(dev, SENSOR_CHAN_GAS_RES, &g) < 0) {
         printf("Cannot read HTS221 GAS channel\n");
         return;
     }
 
-    if (sensor_channel_get(dev, SENSOR_CHAN_POWER, &power) < 0) {
+    if (sensor_channel_get(dev, SENSOR_CHAN_POWER, &pwr) < 0) {
         printf("Cannot read HTS221 power channel\n");
         return;
     }
 
-        if (sensor_channel_get(dev, SENSOR_CHAN_CO2, &co2) < 0) {
+        if (sensor_channel_get(dev, SENSOR_CHAN_CO2, &c) < 0) {
         printf("Cannot read HTS221 co2 channel\n");
         return;
     }
 
     temperature = sensor_value_to_double(&temp);
     humidity = sensor_value_to_double(&hum);
-    gas = sensor_value_to_double(&gas);
-    power = sensor_value_to_double(&power);
-    co2 = sensor_value_to_double(&co2);
+    gas = sensor_value_to_double(&g);
+    power = sensor_value_to_double(&pwr);
+    co2 = sensor_value_to_double(&c);
 
     
     turn_on_color(green);
     printk("Temperature/Humidity/Gas/Power/CO2 are approximately %d.%02dC|%d.%02d%%|%d.%02d|%d.%02d|%d.%02d\n",
-            temp.val1, temp.val2, hum.val1, hum.val2, gas.val1, gas.val2, power.val1, power.val2, co2.val1, co2.val2);
+            temp.val1, temp.val2, hum.val1, hum.val2, g.val1, g.val2, pwr.val1, pwr.val2, c.val1, c.val2);
 }
 
 int init_sensor() {
