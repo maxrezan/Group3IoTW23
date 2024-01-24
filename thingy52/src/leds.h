@@ -10,6 +10,10 @@ typedef enum {
     NUM_COLORS
 } Color;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct {
     unsigned int r;
     unsigned int g;

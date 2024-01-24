@@ -9,6 +9,6 @@ void notify_server();
 /**
  * Init bluetooth and wait for conn
  */
-int bt_init();
+int init_bt();
 
 #endif

@@ -47,19 +47,12 @@ boolean connect() {
     Serial.println("Connection done");
 
 }
-void publishMessage(const char *message) {
+int publishMessage(const char *message) {
   if (!client.publish(MQTT_TOPIC, message)) {
     Serial.println(F("Error publishing"));
+    return -1;
   }
-}
-void reconnect() {
-    while (!client.connected()) {
-      if (client.connect(MQTT_CLIENT_ID)) {
-        client.subscribe(MQTT_TOPIC);
-      } else {
-        delay(MAX_DELAY_TIME);
-      }
-    }
+  return 0;
 }
 
 /**
@@ -84,7 +77,9 @@ static void notify_callback_func(uint8_t* pData, size_t length, bool isNotify, i
 
 
   String result = "{timestamp" + String(deviceID) + ": " + String(timestamp) + ", temperature" + String(deviceID) + ": "  + String(temperature) + ", humidity" + String(deviceID) + ": " + String(humidity) + "}";
-  publishMessage(result.c_str());
+  if (publishMessage(result.c_str())) {
+    return;
+  }
   Serial.print("Sent: ");
   Serial.println(result.c_str());
 };
@@ -145,7 +140,7 @@ class MyClientCallback : public BLEClientCallbacks {
    */
   void onDisconnect(BLEClient* pclient) {
     Serial.print(F("BLE Disconnected: "));
-    Serial.println(pclient->toString().c_str());
+    Serial.println(pclient->getPeerAddress().toString().c_str());
   }
 };
 
@@ -265,7 +260,8 @@ void loop() {
   if (do_connect == true) {
     for (int i = 0; i < N_DEVICES; i++) {
       if (!(bt_devcs[i] != NULL && connect_ble_device(bt_devcs[i], i))) {
-        Serial.println(F("Failed to connect to the esp."));
+        Serial.print(F("Failed to connect to the bt device "));
+        Serial.println(i);
       }
     }
     do_connect = false;

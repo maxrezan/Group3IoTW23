@@ -12,9 +12,6 @@
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1) // null terminator
 #define BT_UUID_HTS_INTERMEDIATE BT_UUID_DECLARE_16(0x2a1e)
 
-// Create an array to store the bytes of the doubles
-static uint8_t data[sizeof(uint32_t) + 2 * sizeof(double)];
-
 /*
  * Define and register service
  */
@@ -48,6 +45,9 @@ static const struct bt_data response_pk[] = {
             DEVICE_NAME_LEN
     ), // Scanning name of device
 };
+
+// Create an array to store the bytes of the doubles
+static uint8_t data[sizeof(uint32_t) + 2 * sizeof(double)];
 
 /**
  * Initializes the bluetooth device and starts advertisement
@@ -93,7 +93,7 @@ static void bt_connected(struct bt_conn *connection, uint8_t error) {
   if (error) {
     printk("Troubles while connecting via bluetooth | Error: %d\n", error);
   }
-
+  turn_on_color(yellow);
   printk("Bluetooth connected\n");
 }
 
@@ -105,7 +105,7 @@ static void bt_connected(struct bt_conn *connection, uint8_t error) {
  */
 static void bt_disconnected(struct bt_conn *connection, uint8_t reason) {
   printk("Bluetooth disconnected | Reason: %d\n", reason);
-  turn_on_color(green);
+  turn_on_color(purple);
 }
 
 /**
@@ -140,7 +140,7 @@ void notify_server() {
   printk("Server notified.\n");
 }
 
-int bt_init() {
+int init_bt() {
   // Initialize the bluetooth device
   int error = bt_enable(bt_ready);
   if (error) {

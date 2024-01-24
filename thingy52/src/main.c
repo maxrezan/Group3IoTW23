@@ -12,6 +12,8 @@
 #include "sensor.h"
 #include "thingy_bt.h"
 
+#define DELAY_TIME 3
+
 void main(void) {
   if (init_leds()) {
     printk("Having some troubles with the initialization of the leds... Help");
@@ -23,13 +25,13 @@ void main(void) {
     exit(-1);
   }
 
-  if (bt_init()) {
+  if (init_bt()) {
     printk("Having some troubles with the bluetooth thing... Help");
     exit(-1);
   }
 
   while (1) {
     notify_server();
-    k_sleep(K_SECONDS(5));
+    k_sleep(K_SECONDS(3));
   }
 }
