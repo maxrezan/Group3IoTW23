@@ -124,9 +124,15 @@ void notify_server() {
   turn_on_color(red);
   extern double temperature;
   extern double humidity;
+  extern double gas;
+  extern double power;
+  extern double co2;
 
   memcpy(&data[0], &temperature, sizeof(double));
-  memcpy(&data[sizeof(double)], &humidity, sizeof(double));
+  memcpy(&data[sizeof(double) * 1], &humidity, sizeof(double));
+  memcpy(&data[sizeof(double) * 2], &gas, sizeof(double));
+  memcpy(&data[sizeof(double) * 3], &power, sizeof(double));
+  memcpy(&data[sizeof(double) * 4], &co2, sizeof(double));
 
   bt_gatt_notify(
     NULL,

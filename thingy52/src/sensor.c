@@ -8,6 +8,9 @@
 static const struct device *sensor = DEVICE_DT_GET_ONE(st_hts221);
 double temperature;
 double humidity;
+double gas;
+double power;
+double co2;
 
 /**
  * @brief Get the temperature from the sensor and write it on <VARIABLE NAME>
@@ -34,11 +37,31 @@ static void get_measurements(const struct device *dev,
         return;
     }
 
+    if (sensor_channel_get(dev, SENSOR_CHAN_GAS_RES, &gas) < 0) {
+        printf("Cannot read HTS221 GAS channel\n");
+        return;
+    }
+
+    if (sensor_channel_get(dev, SENSOR_CHAN_POWER, &power) < 0) {
+        printf("Cannot read HTS221 power channel\n");
+        return;
+    }
+
+        if (sensor_channel_get(dev, SENSOR_CHAN_CO2, &co2) < 0) {
+        printf("Cannot read HTS221 co2 channel\n");
+        return;
+    }
+
     temperature = sensor_value_to_double(&temp);
     humidity = sensor_value_to_double(&hum);
+    gas = sensor_value_to_double(&gas);
+    power = sensor_value_to_double(&power);
+    co2 = sensor_value_to_double(&co2);
+
     
     turn_on_color(green);
-    printk("Temperature/Humidity are approximately %d.%02dC|%d.%02d%%\n", (int)temp.val1, temp.val2, hum.val1, hum.val2);
+    printk("Temperature/Humidity/Gas/Power/CO2 are approximately %d.%02dC|%d.%02d%%|%d.%02d|%d.%02d|%d.%02d\n",
+        temp.val1, temp.val2, hum.val1, hum.val2, gas.val1, gas.val2, power.val1, power.val2, co2.val1, co2.val2);
 }
 
 int init_sensor() {
