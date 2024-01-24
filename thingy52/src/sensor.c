@@ -8,20 +8,18 @@
 static const struct device *sensor = DEVICE_DT_GET_ONE(st_hts221);
 double temperature;
 double humidity;
-double gas;
-double power;
-double co2;
+uint32_t timestamp;
 
 /**
  * @brief Get the temperature from the sensor and write it on <VARIABLE NAME>
  * https://docs.zephyrproject.org/latest/hardware/peripherals/sensor.html#triggers
- * 
+ * https://docs.zephyrproject.org/2.7.5/reference/kernel/timing/clocks.html?highlight=time#uptime
  * @param dev temperature device
  * @param trig trigger configuration
  */
 static void get_measurements(const struct device *dev,
                             const struct sensor_trigger *trig) {
-    struct sensor_value temp, hum, g, pwr, c;
+    struct sensor_value temp, hum;
     int error;
     if ((error = sensor_sample_fetch(dev)) < 0) {
         printk("Sensor sample_fetch error: %d\n", error);
@@ -36,32 +34,12 @@ static void get_measurements(const struct device *dev,
         printf("Cannot read HTS221 humidity channel\n");
         return;
     }
-
-    if (sensor_channel_get(dev, SENSOR_CHAN_GAS_RES, &g) < 0) {
-        printf("Cannot read HTS221 GAS channel\n");
-        return;
-    }
-
-    if (sensor_channel_get(dev, SENSOR_CHAN_POWER, &pwr) < 0) {
-        printf("Cannot read HTS221 power channel\n");
-        return;
-    }
-
-        if (sensor_channel_get(dev, SENSOR_CHAN_CO2, &c) < 0) {
-        printf("Cannot read HTS221 co2 channel\n");
-        return;
-    }
-
+    timestamp = k_uptime_get_32();
     temperature = sensor_value_to_double(&temp);
     humidity = sensor_value_to_double(&hum);
-    gas = sensor_value_to_double(&g);
-    power = sensor_value_to_double(&pwr);
-    co2 = sensor_value_to_double(&c);
 
-    
     turn_on_color(green);
-    printk("Temperature/Humidity/Gas/Power/CO2 are approximately %d.%02dC|%d.%02d%%|%d.%02d|%d.%02d|%d.%02d\n",
-            temp.val1, temp.val2, hum.val1, hum.val2, g.val1, g.val2, pwr.val1, pwr.val2, c.val1, c.val2);
+    printk("<%d> Temperature/Humidity are approximately %d.%02dC|%d.%02d%%\n", timestamp, temp.val1, temp.val2, hum.val1, hum.val2);
 }
 
 int init_sensor() {
@@ -73,16 +51,16 @@ int init_sensor() {
     if (IS_ENABLED(CONFIG_HTS221_TRIGGER)) {
         // https://docs.zephyrproject.org/latest/hardware/peripherals/sensor.html#c.sensor_trigger
         // it doesn't work if I put two triggers
-        struct sensor_trigger temperature_trigger = {
+        struct sensor_trigger temp_hum_trigger = {
             .type = SENSOR_TRIG_DATA_READY,
             .chan = SENSOR_CHAN_ALL,
         };
-        if (sensor_trigger_set(sensor, &temperature_trigger, get_measurements) < 0) {
-            printk("init_sensor failed: cannot configure the temperature_trigger\n");
+        if (sensor_trigger_set(sensor, &temp_hum_trigger, get_measurements) < 0) {
+            printk("init_sensor failed: cannot configure the temp_hum_trigger\n");
             return -1;
         }
 
-        printk("Sensor successfully initialized.\n");
+        printk("Temperature/Humidity sensor successfully initialized.\n");
         return 0;
     }
 

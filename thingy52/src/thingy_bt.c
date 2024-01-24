@@ -13,7 +13,7 @@
 #define BT_UUID_HTS_INTERMEDIATE BT_UUID_DECLARE_16(0x2a1e)
 
 // Create an array to store the bytes of the doubles
-static uint8_t data[5 * sizeof(double)];
+static uint8_t data[sizeof(uint32_t) + 2 * sizeof(double)];
 
 /*
  * Define and register service
@@ -122,17 +122,13 @@ static struct bt_conn_cb bt_connection = {
  */
 void notify_server() {
   turn_on_color(red);
+  extern uint32_t timestamp;
   extern double temperature;
   extern double humidity;
-  extern double gas;
-  extern double power;
-  extern double co2;
 
-  memcpy(&data[0], &temperature, sizeof(double));
-  memcpy(&data[sizeof(double) * 1], &humidity, sizeof(double));
-  memcpy(&data[sizeof(double) * 2], &gas, sizeof(double));
-  memcpy(&data[sizeof(double) * 3], &power, sizeof(double));
-  memcpy(&data[sizeof(double) * 4], &co2, sizeof(double));
+  memcpy(&data[0], &timestamp, sizeof(uint32_t));
+  memcpy(&data[sizeof(uint32_t)], &temperature, sizeof(double));
+  memcpy(&data[sizeof(uint32_t) + sizeof(double)], &humidity, sizeof(double));
 
   bt_gatt_notify(
     NULL,
