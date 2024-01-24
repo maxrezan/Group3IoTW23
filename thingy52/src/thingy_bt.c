@@ -13,7 +13,7 @@
 #define BT_UUID_HTS_INTERMEDIATE BT_UUID_DECLARE_16(0x2a1e)
 
 // Create an array to store the bytes of the doubles
-static uint8_t data[2 * sizeof(double)];
+static uint8_t data[5 * sizeof(double)];
 
 /*
  * Define and register service

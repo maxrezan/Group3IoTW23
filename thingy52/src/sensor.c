@@ -61,7 +61,7 @@ static void get_measurements(const struct device *dev,
     
     turn_on_color(green);
     printk("Temperature/Humidity/Gas/Power/CO2 are approximately %d.%02dC|%d.%02d%%|%d.%02d|%d.%02d|%d.%02d\n",
-        temp.val1, temp.val2, hum.val1, hum.val2, gas.val1, gas.val2, power.val1, power.val2, co2.val1, co2.val2);
+            temp.val1, temp.val2, hum.val1, hum.val2, gas.val1, gas.val2, power.val1, power.val2, co2.val1, co2.val2);
 }
 
 int init_sensor() {
